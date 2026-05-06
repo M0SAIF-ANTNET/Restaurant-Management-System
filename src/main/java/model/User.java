@@ -1,4 +1,5 @@
 package model;
+import enums.UserRole;
 
 public class User extends Person {
     private String username;

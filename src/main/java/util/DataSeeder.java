@@ -1,39 +1,39 @@
 package util;
 
-import model.User;
-import model.Meal;
-import enums.MealCategory;
-import repository.UserRepository;
-import repository.MealRepository;
 import java.sql.Connection;
 import java.sql.Statement;
 
 public class DataSeeder {
-
     public static void seed() {
-        try {
-            Connection conn = DatabaseConnection.getConnection();
-            Statement stmt = conn.createStatement();
+        try (Connection conn = DatabaseConnection.getConnection();
+             Statement stmt = conn.createStatement()) {
+            
+            stmt.execute("CREATE TABLE IF NOT EXISTS users (" +
+                         "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                         "username TEXT UNIQUE, " +
+                         "password TEXT, " +
+                         "name TEXT, " +
+                         "role TEXT)");
 
             stmt.execute("CREATE TABLE IF NOT EXISTS meals (" +
-                    "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                    "name TEXT, description TEXT, price REAL, category TEXT)");
+                         "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                         "name TEXT, " +
+                         "description TEXT, " +
+                         "price REAL, " +
+                         "category TEXT, " +
+                         "available INTEGER)");
 
-            UserRepository userRepo = new UserRepository();
-            if (userRepo.login("admin", "admin123") == null) {
-                userRepo.save(new User(0, "System Admin", "01234567890", "admin@restaurant.com", "admin", "admin123", "ADMIN"));
-                System.out.println("Default admin created: admin/admin123");
-            }
-
-            MealRepository mealRepo = new MealRepository();
-            if (mealRepo.getAllMeals().isEmpty()) {
-                mealRepo.addMeal(new Meal(0, "Margherita Pizza", "Classic tomato and mozzarella", 120.0, MealCategory.MAIN_COURSE));
-                mealRepo.addMeal(new Meal(0, "Beef Burger", "Grilled beef with special sauce", 150.0, MealCategory.MAIN_COURSE));
-                mealRepo.addMeal(new Meal(0, "Caesar Salad", "Fresh lettuce with parmesan", 80.0, MealCategory.APPETIZER));
-                mealRepo.addMeal(new Meal(0, "Molten Cake", "Chocolate lava cake", 90.0, MealCategory.DESSERT));
-                mealRepo.addMeal(new Meal(0, "Fresh Orange Juice", "100% natural", 40.0, MealCategory.BEVERAGE));
-                System.out.println("Sample menu items added.");
-            }
+            stmt.execute("INSERT OR IGNORE INTO users (username, password, name, role) " +
+                         "VALUES ('admin', 'admin123', 'Mohamed Abdelsamea', 'ADMIN')");
+            stmt.execute("INSERT OR IGNORE INTO users (username, password, name, role) " +
+             "VALUES ('chef1', '123', 'Ahmed the Chef', 'CHEF')");
+            
+            stmt.execute("INSERT OR IGNORE INTO meals (id, name, description, price, category, available) " +
+                         "VALUES (1, 'Margherita Pizza', 'Tomato & Mozzarella', 120.0, 'PIZZA', 1)");
+            stmt.execute("INSERT OR IGNORE INTO meals (id, name, description, price, category, available) VALUES (2, 'Beef Burger', 'Double patty with cheese', 150.0, 'BURGER', 1)");
+            stmt.execute("INSERT OR IGNORE INTO meals (id, name, description, price, category, available) VALUES (3, 'Caesar Salad', 'Fresh lettuce with parmesan', 80.0, 'APPETIZER', 1)");
+            stmt.execute("INSERT OR IGNORE INTO meals (id, name, description, price, category, available) VALUES (4, 'Molten Cake', 'Chocolate lava cake', 90.0, 'DESSERT', 1)");
+            System.out.println("✅ Database tables checked/created successfully.");
 
         } catch (Exception e) {
             System.err.println("Seeding Error: " + e.getMessage());

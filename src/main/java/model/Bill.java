@@ -19,13 +19,12 @@ public class Bill {
         this.orderId = orderId;
         this.amount = amount;
         this.discount = discount;
-        this.tax = amount * 0.14; // 14% VAT example
+        this.tax = amount * 0.14;
         this.finalAmount = (amount + tax) - discount;
         this.status = PaymentStatus.UNPAID;
         this.billDate = new Date();
     }
 
-    // Getters and Setters
     public int getBillId() { return billId; }
     public double getFinalAmount() { return finalAmount; }
     public PaymentStatus getStatus() { return status; }

@@ -1,36 +1,34 @@
 package main;
 
 import util.DataSeeder;
-import util.DisplayHelper;
-import service.AuthService;
-import java.util.Scanner;
+import ui.LoginForm;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 
 public class Main {
     public static void main(String[] args) {
-        // 1. Initialize DB and Sample Data
-        System.out.println("Initializing System...");
-        DataSeeder.seed();
+        initializeSystem();
 
-        DisplayHelper.printHeader("Welcome to Restaurant System");
-        
-        // 2. Simple Console Login (Testing before GUI)
-        Scanner scanner = new Scanner(System.in);
-        AuthService authService = new AuthService();
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception e) {
+            System.err.println("Theme Error: " + e.getMessage());
+        }
 
-        System.out.print("Username: ");
-        String user = scanner.nextLine();
-        System.out.print("Password: ");
-        String pass = scanner.nextLine();
+        SwingUtilities.invokeLater(() -> {
+            LoginForm loginForm = new LoginForm();
+            loginForm.setVisible(true);
+            loginForm.setLocationRelativeTo(null);
+        });
+    }
 
-        if (authService.login(user, pass)) {
-            System.out.println("Login Successful!");
-            System.out.println("Welcome, " + AuthService.getCurrentUser().getName());
-            System.out.println("Role: " + AuthService.getCurrentUser().getUserRole());
-            
-            // Here you would launch the GUI in the next step
-            // Example: new LoginUI().setVisible(true);
-        } else {
-            System.out.println("Invalid credentials. Please restart.");
+    private static void initializeSystem() {
+        System.out.println("Initializing Chef Shaker System...");
+        try {
+            DataSeeder.seed();
+            System.out.println("Database sync complete.");
+        } catch (Exception e) {
+            System.err.println("Critical Error during initialization: " + e.getMessage());
         }
     }
 }

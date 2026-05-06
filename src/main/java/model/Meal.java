@@ -3,32 +3,30 @@ package model;
 import enums.MealCategory;
 
 public class Meal {
-    private int id;
+    private int mealId;
     private String name;
     private String description;
     private double price;
     private MealCategory category;
-    private boolean isAvailable;
+    private boolean available;
 
-    public Meal(int id, String name, String description, double price, MealCategory category) {
-        this.id = id;
+    public Meal(int mealId, String name, String description, double price, MealCategory category, boolean available) {
+        this.mealId = mealId;
         this.name = name;
         this.description = description;
         this.price = price;
         this.category = category;
-        this.isAvailable = true;
+        this.available = available;
     }
 
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
+    public Meal(int mealId, String name, String description, double price, MealCategory category) {
+        this(mealId, name, description, price, category, true);
+    }
+
+    public int getMealId() { return mealId; }
     public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-    public double getPrice() { return price; }
-    public void setPrice(double price) { this.price = price; }
-    public MealCategory getCategory() { return category; }
-    public void setCategory(MealCategory category) { this.category = category; }
-    public boolean isAvailable() { return isAvailable; }
-    public void setAvailable(boolean available) { isAvailable = available; }
     public String getDescription() { return description; }
-    
+    public double getPrice() { return price; }
+    public MealCategory getCategory() { return category; }
+    public boolean isAvailable() { return available; }
 }

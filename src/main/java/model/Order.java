@@ -1,38 +1,28 @@
 package model;
 
 import enums.OrderStatus;
-import java.util.ArrayList;
-import java.util.Date;
+import java.util.List;
 
 public class Order {
     private int orderId;
-    private int customerId;
-    private ArrayList<OrderItem> items;
-    private double totalAmount;
+    private String customerName;
+    private List<Meal> meals;
+    private double totalPrice;
     private OrderStatus status;
-    private Date orderDate;
 
-    public Order(int orderId, int customerId) {
+    public Order(int orderId, String customerName, List<Meal> meals, double totalPrice, OrderStatus status) {
         this.orderId = orderId;
-        this.customerId = customerId;
-        this.items = new ArrayList<>();
-        this.status = OrderStatus.PENDING;
-        this.orderDate = new Date();
+        this.customerName = customerName;
+        this.meals = meals;
+        this.totalPrice = totalPrice;
+        this.status = status;
     }
 
-    public void addItem(OrderItem item) {
-        items.add(item);
-        calculateTotal();
-    }
-
-    private void calculateTotal() {
-        this.totalAmount = items.stream().mapToDouble(OrderItem::getSubTotal).sum();
-    }
-
-    // Getters
     public int getOrderId() { return orderId; }
-    public ArrayList<OrderItem> getItems() { return items; }
-    public double getTotalAmount() { return totalAmount; }
+    public String getCustomerName() { return customerName; }
+    public List<Meal> getMeals() { return meals; }
+    public List<Meal> getItems() { return meals; } 
+    public double getTotalPrice() { return totalPrice; }
+    public double getTotalAmount() { return totalPrice; } 
     public OrderStatus getStatus() { return status; }
-    public void setStatus(OrderStatus status) { this.status = status; }
 }

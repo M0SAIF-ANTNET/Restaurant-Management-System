@@ -1,61 +1,52 @@
 package repository;
 
 import model.Order;
-import model.OrderItem;
+import model.Meal;
 import enums.OrderStatus;
 import util.DatabaseConnection;
 import java.sql.*;
 
 public class OrderRepository {
+    public void saveOrder(Order order) { 
+        String query = "INSERT INTO orders (customer_name, total_price, status) VALUES (?, ?, ?)";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+            
+            pstmt.setString(1, order.getCustomerName());
+            pstmt.setDouble(2, order.getTotalPrice());
+            pstmt.setString(3, order.getStatus().toString());
+            pstmt.executeUpdate();
 
-    public void saveOrder(Order order) {
-        String orderSql = "INSERT INTO orders (customer_id, total_amount, status, order_date) VALUES (?, ?, ?, ?)";
-        String itemSql = "INSERT INTO order_items (order_id, meal_id, quantity, subtotal) VALUES (?, ?, ?, ?)";
-
-        Connection conn = null;
-        try {
-            conn = DatabaseConnection.getConnection();
-            conn.setAutoCommit(false); // Start Transaction
-
-            int generatedOrderId = -1;
-            try (PreparedStatement pstmt = conn.prepareStatement(orderSql, Statement.RETURN_GENERATED_KEYS)) {
-                pstmt.setInt(1, order.getOrderId()); // Assuming manual ID or adjust for Auto-increment
-                pstmt.setDouble(2, order.getTotalAmount());
-                pstmt.setString(3, order.getStatus().name());
-                pstmt.setTimestamp(4, new Timestamp(System.currentTimeMillis()));
-                pstmt.executeUpdate();
-
-                ResultSet rs = pstmt.getGeneratedKeys();
-                if (rs.next()) {
-                    generatedOrderId = rs.getInt(1);
-                }
+            ResultSet rs = pstmt.getGeneratedKeys();
+            if (rs.next()) {
+                saveOrderItems(rs.getInt(1), order);
             }
-
-            try (PreparedStatement itemPstmt = conn.prepareStatement(itemSql)) {
-                for (OrderItem item : order.getItems()) {
-                    itemPstmt.setInt(1, generatedOrderId);
-                    itemPstmt.setInt(2, item.getMeal().getId());
-                    itemPstmt.setInt(3, item.getQuantity());
-                    itemPstmt.setDouble(4, item.getSubTotal());
-                    itemPstmt.addBatch(); // Performance optimization
-                }
-                itemPstmt.executeBatch();
-            }
-
-            conn.commit(); 
         } catch (SQLException e) {
-            if (conn != null) {
-                try { conn.rollback(); } catch (SQLException ex) { ex.printStackTrace(); }
+            e.printStackTrace();
+        }
+    }
+
+    private void saveOrderItems(int orderId, Order order) {
+        String query = "INSERT INTO order_items (order_id, meal_id, quantity) VALUES (?, ?, ?)";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+            for (Meal meal : order.getMeals()) {
+                pstmt.setInt(1, orderId);
+                pstmt.setInt(2, meal.getMealId());
+                pstmt.setInt(3, 1);
+                pstmt.addBatch();
             }
+            pstmt.executeBatch();
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
     public void updateStatus(int orderId, OrderStatus status) {
-        String sql = "UPDATE orders SET status = ? WHERE id = ?";
+        String query = "UPDATE orders SET status = ? WHERE id = ?";
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, status.name());
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setString(1, status.toString());
             pstmt.setInt(2, orderId);
             pstmt.executeUpdate();
         } catch (SQLException e) {

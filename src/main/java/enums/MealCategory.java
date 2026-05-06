@@ -1,9 +1,10 @@
 package enums;
 
 public enum MealCategory {
+    PIZZA,
+    BURGER,
     APPETIZER,
-    MAIN_COURSE,
     DESSERT,
     BEVERAGE,
-    SIDE_DISH
+    MAIN_COURSE
 }
