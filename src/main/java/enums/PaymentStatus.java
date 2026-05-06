@@ -1,5 +1,8 @@
 package enums;
 
-public class PaymentStatus {
-    
+public enum PaymentStatus {
+    UNPAID,
+    PARTIALLY_PAID,
+    PAID,
+    REFUNDED
 }

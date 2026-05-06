@@ -1,5 +1,8 @@
 package enums;
 
-public class PaymentMethod {
-    
+public enum PaymentMethod {
+    CASH,
+    CREDIT_CARD,
+    DEBIT_CARD,
+    ONLINE_PAYMENT
 }

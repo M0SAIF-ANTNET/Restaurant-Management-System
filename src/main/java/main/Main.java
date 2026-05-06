@@ -1,36 +1,36 @@
 package main;
-import java.util.ArrayList;
-import java.util.Scanner;
-import model.User;
+
+import util.DataSeeder;
+import util.DisplayHelper;
 import service.AuthService;
-import util.*;
+import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        ArrayList<User> users = DataSeeder.seedUsers();
-        AuthService authService = new AuthService(users);
+        // 1. Initialize DB and Sample Data
+        System.out.println("Initializing System...");
+        DataSeeder.seed();
 
+        DisplayHelper.printHeader("Welcome to Restaurant System");
+        
+        // 2. Simple Console Login (Testing before GUI)
         Scanner scanner = new Scanner(System.in);
+        AuthService authService = new AuthService();
 
-        System.out.println("=== Restaurant Management System ===");
-        System.out.print("Enter username: ");
-        String username = scanner.nextLine();
-        System.out.print("Enter password: ");
-        String password = scanner.nextLine();
+        System.out.print("Username: ");
+        String user = scanner.nextLine();
+        System.out.print("Password: ");
+        String pass = scanner.nextLine();
 
-        User loggedInUser = authService.login(username, password);
-
-        if (loggedInUser != null) {
-            System.out.println("Welcome, " + loggedInUser.getName());
-
-            authService.logout(loggedInUser);
+        if (authService.login(user, pass)) {
+            System.out.println("Login Successful!");
+            System.out.println("Welcome, " + AuthService.getCurrentUser().getName());
+            System.out.println("Role: " + AuthService.getCurrentUser().getUserRole());
+            
+            // Here you would launch the GUI in the next step
+            // Example: new LoginUI().setVisible(true);
         } else {
-            System.out.println("Login failed.");
+            System.out.println("Invalid credentials. Please restart.");
         }
-
-        scanner.close();
     }
 }
-
-
-//Mohamed HAmouda 16-4-26

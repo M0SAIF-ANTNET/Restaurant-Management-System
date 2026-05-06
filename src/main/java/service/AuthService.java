@@ -1,39 +1,34 @@
 package service;
-import model.User;
 
-import java.util.ArrayList;
+import model.User;
+import repository.UserRepository;
 
 public class AuthService {
-    private ArrayList<User> users;
+    private final UserRepository userRepository;
+    private static User currentUser; // To keep track of the logged-in user
 
-    public AuthService(ArrayList<User> users) {
-        this.users = users;
+    public AuthService() {
+        this.userRepository = new UserRepository();
     }
 
-    public User findUserByUsername(String username) {
-        for (User user : users) {
-            if (user.getUsername().equals(username)) {
-                return user;
-            }
-        }
-        return null;
-    }
-
-    public User login(String username, String password) {
-        User user = findUserByUsername(username);
-
-        if (user != null && user.getPassword().equals(password)) {
-            user.login();
-            return user;
-        }
-
-        System.out.println("Invalid username or password.");
-        return null;
-    }
-
-    public void logout(User user) {
+    public boolean login(String username, String password) {
+        User user = userRepository.login(username, password);
         if (user != null) {
-            user.logout();
+            currentUser = user;
+            return true;
         }
+        return false;
+    }
+
+    public static void logout() {
+        currentUser = null;
+    }
+
+    public static User getCurrentUser() {
+        return currentUser;
+    }
+
+    public static boolean isAdmin() {
+        return currentUser != null && "ADMIN".equalsIgnoreCase(currentUser.getUserRole());
     }
 }

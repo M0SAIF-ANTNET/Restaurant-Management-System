@@ -1,5 +1,9 @@
 package enums;
 
-public class MealCategory {
-    
+public enum MealCategory {
+    APPETIZER,
+    MAIN_COURSE,
+    DESSERT,
+    BEVERAGE,
+    SIDE_DISH
 }
