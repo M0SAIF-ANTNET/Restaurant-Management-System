@@ -111,7 +111,9 @@ String username = txtUsername.getText();
     String roleStr = user.getUserRole().toString(); 
     
     if (roleStr.equals("ADMIN")) {
-        System.out.println("Opening Admin View...");
+System.out.println("Opening Admin View...");
+        new AdminDashboard().setVisible(true);
+        this.dispose();
     } else if (roleStr.equals("CHEF")) {
         System.out.println("Opening Chef View...");
     } else if (roleStr.equals("WAITER")) {
