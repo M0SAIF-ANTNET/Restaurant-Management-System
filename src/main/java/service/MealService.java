@@ -12,12 +12,20 @@ public class MealService {
     }
 
     public List<Meal> getAvailableMenu() {
-        // Business Rule: We can filter only available meals here
         return mealRepository.getAllMeals();
     }
 
     public void addNewMeal(Meal meal) {
-        // Logic: Check if meal name already exists before adding
         mealRepository.addMeal(meal);
+    }
+
+    public boolean deleteMeal(int id) {
+        try {
+            mealRepository.deleteMeal(id);
+            return true;
+        } catch (Exception e) {
+            System.err.println("Error in MealService.deleteMeal: " + e.getMessage());
+            return false;
+        }
     }
 }

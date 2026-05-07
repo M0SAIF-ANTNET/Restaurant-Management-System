@@ -25,7 +25,7 @@ public class Main {
     private static void initializeSystem() {
         System.out.println("Initializing Chef Shaker System...");
         try {
-            DataSeeder.seed();
+            // DataSeeder.seed();
             System.out.println("Database sync complete.");
         } catch (Exception e) {
             System.err.println("Critical Error during initialization: " + e.getMessage());

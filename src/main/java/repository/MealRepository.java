@@ -43,4 +43,18 @@ public class MealRepository {
             e.printStackTrace();
         }
     }
+
+    public void deleteMeal(int id) {
+        String sql = "DELETE FROM meals WHERE id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
+            pstmt.setInt(1, id);
+            pstmt.executeUpdate();
+            System.out.println("Meal with ID " + id + " deleted from DB.");
+            
+        } catch (SQLException e) {
+            System.err.println("Error in deleteMeal: " + e.getMessage());
+        }
+    }
 }

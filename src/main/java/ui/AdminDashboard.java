@@ -8,6 +8,7 @@ import service.MealService;
 import model.Meal;
 import java.util.List;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.JOptionPane;
 
 public class AdminDashboard extends javax.swing.JFrame {
     
@@ -56,7 +57,7 @@ public class AdminDashboard extends javax.swing.JFrame {
         tblMeals = new javax.swing.JTable();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
+        deleteMeal = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -78,7 +79,8 @@ public class AdminDashboard extends javax.swing.JFrame {
         jButton2.setText("edit meal");
         jButton2.addActionListener(this::jButton2ActionPerformed);
 
-        jButton3.setText("delete meal");
+        deleteMeal.setText("delete meal");
+        deleteMeal.addActionListener(this::deleteMealActionPerformed);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -94,7 +96,7 @@ public class AdminDashboard extends javax.swing.JFrame {
                 .addGap(38, 38, 38)
                 .addComponent(jButton2)
                 .addGap(33, 33, 33)
-                .addComponent(jButton3)
+                .addComponent(deleteMeal)
                 .addContainerGap(16, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -106,7 +108,7 @@ public class AdminDashboard extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)
                     .addComponent(jButton2)
-                    .addComponent(jButton3))
+                    .addComponent(deleteMeal))
                 .addContainerGap(76, Short.MAX_VALUE))
         );
 
@@ -116,6 +118,24 @@ public class AdminDashboard extends javax.swing.JFrame {
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void deleteMealActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteMealActionPerformed
+        int selectedRow = tblMeals.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Please select a meal to delete.");
+            return;
+        }
+
+        int id = (int) tblMeals.getValueAt(selectedRow, 0);
+        int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete this meal?");
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            MealService mealService = new MealService();
+        if (mealService.deleteMeal(id)) {
+            JOptionPane.showMessageDialog(this, "Meal deleted successfully!");
+            loadMealData();
+    }
+}    }//GEN-LAST:event_deleteMealActionPerformed
 
     /**
      * @param args the command line arguments
@@ -143,9 +163,9 @@ public class AdminDashboard extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton deleteMeal;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable tblMeals;
     // End of variables declaration//GEN-END:variables
