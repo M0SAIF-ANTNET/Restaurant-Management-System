@@ -55,9 +55,10 @@ public class AdminDashboard extends javax.swing.JFrame {
 
         jScrollPane1 = new javax.swing.JScrollPane();
         tblMeals = new javax.swing.JTable();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        btnAddMeal = new javax.swing.JButton();
+        btnEditMeal = new javax.swing.JButton();
         deleteMeal = new javax.swing.JButton();
+        btnRefresh = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -74,13 +75,17 @@ public class AdminDashboard extends javax.swing.JFrame {
         ));
         jScrollPane1.setViewportView(tblMeals);
 
-        jButton1.setText("add meal");
+        btnAddMeal.setText("add meal");
+        btnAddMeal.addActionListener(this::btnAddMealActionPerformed);
 
-        jButton2.setText("edit meal");
-        jButton2.addActionListener(this::jButton2ActionPerformed);
+        btnEditMeal.setText("edit meal");
+        btnEditMeal.addActionListener(this::btnEditMealActionPerformed);
 
         deleteMeal.setText("delete meal");
         deleteMeal.addActionListener(this::deleteMealActionPerformed);
+
+        btnRefresh.setText("refresh");
+        btnRefresh.addActionListener(this::btnRefreshActionPerformed);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -88,16 +93,17 @@ public class AdminDashboard extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                .addContainerGap())
-            .addGroup(layout.createSequentialGroup()
-                .addGap(29, 29, 29)
-                .addComponent(jButton1)
-                .addGap(38, 38, 38)
-                .addComponent(jButton2)
-                .addGap(33, 33, 33)
-                .addComponent(deleteMeal)
-                .addContainerGap(16, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(btnAddMeal)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnEditMeal)
+                        .addGap(18, 18, 18)
+                        .addComponent(deleteMeal)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnRefresh)))
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -106,18 +112,19 @@ public class AdminDashboard extends javax.swing.JFrame {
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 224, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(37, 37, 37)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
-                    .addComponent(jButton2)
-                    .addComponent(deleteMeal))
+                    .addComponent(btnAddMeal)
+                    .addComponent(btnEditMeal)
+                    .addComponent(deleteMeal)
+                    .addComponent(btnRefresh))
                 .addContainerGap(76, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    private void btnEditMealActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditMealActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton2ActionPerformed
+    }//GEN-LAST:event_btnEditMealActionPerformed
 
     private void deleteMealActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteMealActionPerformed
         int selectedRow = tblMeals.getSelectedRow();
@@ -136,6 +143,14 @@ public class AdminDashboard extends javax.swing.JFrame {
             loadMealData();
     }
 }    }//GEN-LAST:event_deleteMealActionPerformed
+
+    private void btnAddMealActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddMealActionPerformed
+        new AddMealDialog().setVisible(true);
+    }//GEN-LAST:event_btnAddMealActionPerformed
+
+    private void btnRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRefreshActionPerformed
+        loadMealData();
+    }//GEN-LAST:event_btnRefreshActionPerformed
 
     /**
      * @param args the command line arguments
@@ -163,9 +178,10 @@ public class AdminDashboard extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnAddMeal;
+    private javax.swing.JButton btnEditMeal;
+    private javax.swing.JButton btnRefresh;
     private javax.swing.JButton deleteMeal;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable tblMeals;
     // End of variables declaration//GEN-END:variables
