@@ -2,7 +2,7 @@ package model;
 
 public class Employee extends User {
     private double salary;
-    private String shift; // Morning, Evening
+    private String shift;
 
     public Employee(int id, String name, String phone, String email, String username, String password, String role, double salary) {
         super(id, name, phone, email, username, password, role);

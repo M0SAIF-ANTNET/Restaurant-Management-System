@@ -21,4 +21,21 @@ public class CustomerService {
             customerRepository.updatePoints(customerId, c.getLoyaltyPoints(), c.getTotalSpent());
         }
     }
+        public List<Customer> getAvailableCustomers() {
+        return customerRepository.getAllMeals();
+    }
+
+    public void addNewCustomer(Meal meal) {
+        customerRepository.addCustomer(customer);
+    }
+
+    public boolean deleteCustomer(int id) {
+        try {
+            customerRepository.deleteCustomer(id);
+            return true;
+        } catch (Exception e) {
+            System.err.println("Error in MealService.deleteCustomer: " + e.getMessage());
+            return false;
+        }
+    }
 }

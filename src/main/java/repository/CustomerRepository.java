@@ -53,4 +53,21 @@ public class CustomerRepository {
         }
         return null;
     }
+    
+    public List<Customer> findAll() {
+    List<Customer> customers = new ArrayList<>();
+    String sql = "SELECT * FROM customers";
+    try (Connection conn = DatabaseConnection.getConnection();
+         Statement stmt = conn.createStatement();
+         ResultSet rs = stmt.executeQuery(sql)) {
+        while (rs.next()) {
+            Customer c = new Customer(rs.getInt("id"), rs.getString("name"), 
+                                     rs.getString("phone"), rs.getString("email"), 
+                                     rs.getString("address"));
+            c.setLoyaltyPoints(rs.getInt("loyalty_points"));
+            customers.add(c);
+        }
+    } catch (SQLException e) { e.printStackTrace(); }
+    return customers;
+}
 }
