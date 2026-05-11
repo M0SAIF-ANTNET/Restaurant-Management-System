@@ -47,14 +47,12 @@
               <EmptySpace min="152" max="32767" attributes="0"/>
               <Group type="103" groupAlignment="0" max="-2" attributes="0">
                   <Component id="salary" pref="103" max="32767" attributes="0"/>
-                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                      <Component id="role" pref="103" max="32767" attributes="0"/>
-                      <Component id="password" max="32767" attributes="0"/>
-                      <Component id="username" max="32767" attributes="0"/>
-                      <Component id="email" max="32767" attributes="0"/>
-                      <Component id="phone" max="32767" attributes="0"/>
-                      <Component id="name" max="32767" attributes="0"/>
-                  </Group>
+                  <Component id="role" pref="103" max="32767" attributes="0"/>
+                  <Component id="password" max="32767" attributes="0"/>
+                  <Component id="username" max="32767" attributes="0"/>
+                  <Component id="email" max="32767" attributes="0"/>
+                  <Component id="phone" max="32767" attributes="0"/>
+                  <Component id="name" max="32767" attributes="0"/>
               </Group>
               <EmptySpace min="-2" pref="84" max="-2" attributes="0"/>
           </Group>

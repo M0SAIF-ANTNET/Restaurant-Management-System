@@ -117,7 +117,6 @@ public class AddCustomerDialog extends javax.swing.JFrame {
         String custPhone = phone.getText();
         String custEmail = email.getText();
 
-        // العميل بنسجله كـ User برول CUSTOMER وباسوورد افتراضي
         model.User newCust = new model.User(0, custName, custPhone, custEmail, custPhone, "123", "CUSTOMER");
 
         service.AuthService auth = new service.AuthService();

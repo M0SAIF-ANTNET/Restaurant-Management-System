@@ -182,23 +182,19 @@ public class addEmployeeDialog extends javax.swing.JFrame {
 
     private void btnAddEmployeeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddEmployeeActionPerformed
         try {
-        // سحب البيانات من الـ TextFields بتاعتك
         String empName = name.getText();
         String empPhone = phone.getText();
         String empEmail = email.getText();
         String empUser = username.getText();
         String empPass = password.getText();
-        String empRole = role.getText(); // أو جيبها من ComboBox لو عاملها
+        String empRole = role.getText();
         double empSalary = Double.parseDouble(salary.getText());
 
-        // إنشاء Object الموظف
         model.Employee newEmp = new model.Employee(0, empName, empPhone, empEmail, empUser, empPass, empRole, empSalary);
 
-        // الحفظ من خلال السيرفس
         service.AuthService auth = new service.AuthService();
         if (auth.register(newEmp)) {
             javax.swing.JOptionPane.showMessageDialog(this, "Employee " + empName + " added successfully!");
-            this.dispose(); // نقفل الديالوج بعد الحفظ
         }
     } catch (Exception e) {
         javax.swing.JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());

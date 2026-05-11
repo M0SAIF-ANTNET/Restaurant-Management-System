@@ -124,16 +124,13 @@ public customerDashboard() {
 
     for (int row : selectedRows) {
         try {
-            // سحب البيانات من الجدول
             int mealId = Integer.parseInt(tblMeals.getValueAt(row, 0).toString());
             String name = tblMeals.getValueAt(row, 1).toString();
             double price = Double.parseDouble(tblMeals.getValueAt(row, 2).toString());
             String categoryStr = tblMeals.getValueAt(row, 3).toString();
 
-            // تحويل الـ String لـ Enum (MealCategory)
             enums.MealCategory cat = enums.MealCategory.valueOf(categoryStr.toUpperCase());
 
-            // إنشاء كائن الوجبة باستخدام الـ Constructor المتاح عندك
             model.Meal m = new model.Meal(mealId, name, "", price, cat, true);
             
             selectedMeals.add(m);
@@ -144,20 +141,17 @@ public customerDashboard() {
     }
 
     try {
-        // إنشاء الأوردر باستخدام الـ Constructor المتاح في كلاس Order
         model.Order newOrder = new model.Order(
-            0, // الـ ID بيتم إنشاؤه تلقائي في الداتا بيز
+            0,
             "Guest Customer", 
             selectedMeals, 
             totalOrderPrice, 
             enums.OrderStatus.PENDING
         );
 
-        // تنفيذ الطلب من خلال الـ OrderService زي ما هو متعرف عندك
         service.OrderService orderService = new service.OrderService();
         orderService.placeOrder(newOrder);
 
-        // تسجيل العملية في ملف الـ Log
         util.LoggerUtil.log("Order Placed - Total: " + totalOrderPrice + " EGP");
 
         javax.swing.JOptionPane.showMessageDialog(this, "Order sent to Chef successfully!");

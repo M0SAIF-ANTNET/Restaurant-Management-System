@@ -15,7 +15,7 @@ public class OrderItem {
     public int getQuantity() { return quantity; }
     public void setQuantity(int quantity) { 
         this.quantity = quantity;
-        this.subTotal = meal.getPrice() * quantity; // Recalculate
+        this.subTotal = meal.getPrice() * quantity;
     }
     public double getSubTotal() { return subTotal; }
 }

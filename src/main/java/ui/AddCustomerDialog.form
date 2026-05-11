@@ -35,10 +35,8 @@
                       <EmptySpace pref="111" max="32767" attributes="0"/>
                       <Group type="103" groupAlignment="0" max="-2" attributes="0">
                           <Component id="email" pref="106" max="32767" attributes="0"/>
-                          <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                              <Component id="phone" pref="106" max="32767" attributes="0"/>
-                              <Component id="name" max="32767" attributes="0"/>
-                          </Group>
+                          <Component id="phone" pref="106" max="32767" attributes="0"/>
+                          <Component id="name" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                   <Group type="102" alignment="0" attributes="0">

@@ -7,7 +7,7 @@ import enums.PaymentMethod;
 import enums.PaymentStatus;
 
 public class BillingService {
-    private static final double TAX_RATE = 0.14; // 14% VAT
+    private static final double TAX_RATE = 0.14;
 
     public Bill createBill(Order order, double discount) {
         double subtotal = order.getTotalAmount();

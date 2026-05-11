@@ -10,7 +10,6 @@ public class EmployeeService {
 
 public List<Employee> getAllEmployees() {
     List<Employee> employees = new ArrayList<>();
-    // بنجيب كل البيانات من جدول users عشان نملأ الـ Constructor بتاع الـ Employee
     String query = "SELECT * FROM users WHERE role != 'ADMIN'"; 
     
     try (Connection conn = DatabaseConnection.getConnection();
@@ -18,16 +17,15 @@ public List<Employee> getAllEmployees() {
          ResultSet rs = stmt.executeQuery(query)) {
         
         while (rs.next()) {
-            // هنا بنبعت كل الـ 8 باراميترز اللي الكود بتاعك محتاجها
             Employee emp = new Employee(
-                rs.getInt("id"),          // id
-                rs.getString("name"),      // name
-                "N/A",                     // phone (ممكن تزوده في الداتا بيز بعدين)
-                "N/A",                     // email (ممكن تزوده في الداتا بيز بعدين)
-                rs.getString("username"),  // username
-                rs.getString("password"),  // password
-                rs.getString("role"),      // role
-                8000.0                     // salary
+                rs.getInt("id"),          
+                rs.getString("name"),      
+                "N/A",                     
+                "N/A",                     
+                rs.getString("username"),  
+                rs.getString("password"),  
+                rs.getString("role"),      
+                8000.0                     
             );
             employees.add(emp);
         }

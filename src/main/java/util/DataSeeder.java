@@ -8,7 +8,6 @@ public class DataSeeder {
         try (Connection conn = DatabaseConnection.getConnection();
              Statement stmt = conn.createStatement()) {
             
-            // تحديث جدول المستخدمين ليشمل كل الحقول المطلوبة
             stmt.execute("CREATE TABLE IF NOT EXISTS users (" +
                          "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                          "username TEXT UNIQUE, " +
@@ -28,7 +27,6 @@ public class DataSeeder {
                          "category TEXT, " +
                          "available INTEGER)");
 
-            // إدخال بيانات الأدمن والشيف الافتراضية
             stmt.execute("INSERT OR IGNORE INTO users (username, password, name, role, salary) " +
                          "VALUES ('admin', 'admin123', 'Mohamed Abdelsamea', 'ADMIN', 0.0)");
             stmt.execute("INSERT OR IGNORE INTO users (username, password, name, role, salary) " +
@@ -36,7 +34,6 @@ public class DataSeeder {
             stmt.execute("INSERT OR IGNORE INTO users (username, password, name, role, salary) " +
                          "VALUES ('cust1', '123', 'hesham', 'CUSTOMER', 0.0)");
             
-            // الوجبات الافتراضية
             stmt.execute("INSERT OR IGNORE INTO meals (id, name, description, price, category, available) " +
                          "VALUES (1, 'Margherita Pizza', 'Tomato & Mozzarella', 120.0, 'PIZZA', 1)");
             stmt.execute("INSERT OR IGNORE INTO meals (id, name, description, price, category, available) " +

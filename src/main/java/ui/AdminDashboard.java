@@ -22,9 +22,9 @@ public class AdminDashboard extends javax.swing.JFrame {
      */
     public AdminDashboard() {
         initComponents();
-        loadMealData();      // دي موجودة عندك
-        loadEmployeeData();  // زود دي
-        loadCustomerData();  // وزود دي
+        loadMealData();    
+        loadEmployeeData(); 
+        loadCustomerData();  
     }
 
 private void loadMealData() {
@@ -32,7 +32,6 @@ private void loadMealData() {
         service.MealService mealService = new service.MealService();
         java.util.List<model.Meal> meals = mealService.getAvailableMenu();
         
-        // تعريف أسماء الأعمدة طبقاً للموديل اللي معاك
         String[] columnNames = {"ID", "Name", "Price", "Category", "Available"};
         DefaultTableModel model = new DefaultTableModel(columnNames, 0);
         
@@ -46,7 +45,7 @@ private void loadMealData() {
             };
             model.addRow(row);
         }
-        tblMeals.setModel(model); // نربط الموديل الجديد بالجدول
+        tblMeals.setModel(model);
     } catch (Exception e) {
         JOptionPane.showMessageDialog(this, "Error loading meals: " + e.getMessage());
     }
@@ -61,14 +60,13 @@ private void loadMealData() {
         model.setRowCount(0);
 
         for (model.User u : allUsers) {
-            // بنفلتر عشان نعرض الموظفين بس (أي حد مش CUSTOMER)
             if (u instanceof model.Employee) {
                 model.Employee emp = (model.Employee) u;
                 Object[] row = {
                     emp.getId(),
                     emp.getName(),
                     emp.getUserRole(),
-                    emp.getSalary() // هيعرض السالري الحقيقي من الداتا بيز
+                    emp.getSalary()
                 };
                 model.addRow(row);
             }
@@ -91,8 +89,8 @@ private void loadMealData() {
                 Object[] row = {
                     u.getId(),
                     u.getName(),
-                    u.getPhone(), // هيعرض الموبايل الحقيقي اللي دخلته
-                    0 // نقاط الولاء (ممكن تخليها 0 حالياً)
+                    u.getPhone(), 
+                    0 
                 };
                 model.addRow(row);
             }
@@ -288,8 +286,6 @@ private void loadMealData() {
 
     private void btnPDFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPDFActionPerformed
     try {
-            // هنستخدم ميثود بتبني ملف نصي أو PDF بسيط
-            // هحطلك كود الميثود دي تحت
             exportDataToPDF(); 
             JOptionPane.showMessageDialog(this, "Report exported successfully to PDF!");
         } catch (Exception e) {
@@ -326,24 +322,21 @@ private void loadMealData() {
 
     private void btnAddEmpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddEmpActionPerformed
 addEmployeeDialog addEmpDlg = new addEmployeeDialog(); 
-addEmpDlg.setVisible(true);    addEmpDlg.setLocationRelativeTo(this); // عشان يظهر في نص الشاشة
+addEmpDlg.setVisible(true);    addEmpDlg.setLocationRelativeTo(this);
     addEmpDlg.setVisible(true); 
     
-    // 2. بعد ما الديالوج يتقفل، بنعمل ريفرش للجدول عشان نشوف الموظف الجديد
     loadEmployeeData();
     }//GEN-LAST:event_btnAddEmpActionPerformed
 
     private void btnDeleteEmpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteEmpActionPerformed
 int selectedRow = tblEmployees.getSelectedRow();
     
-    // 1. التأكد إن اليوزر اختار صف فعلاً
     if (selectedRow == -1) {
         JOptionPane.showMessageDialog(this, "Please select an employee from the table first!");
         return;
     }
 
     try {
-        // 2. سحب الـ ID من العمود الأول (لازم نتأكد إنه Integer)
         Object idObj = tblEmployees.getValueAt(selectedRow, 0);
         int id = Integer.parseInt(idObj.toString());
 
@@ -356,7 +349,7 @@ int selectedRow = tblEmployees.getSelectedRow();
             service.EmployeeService empService = new service.EmployeeService();
             if (empService.deleteEmployee(id)) {
                 JOptionPane.showMessageDialog(this, "Employee deleted successfully!");
-                loadEmployeeData(); // تحديث الجدول فوراً
+                loadEmployeeData(); 
             } else {
                 JOptionPane.showMessageDialog(this, "Failed to delete. Employee might not exist.");
             }
@@ -372,7 +365,6 @@ addCustDlg.setVisible(true);
 addCustDlg.setLocationRelativeTo(this);
     addCustDlg.setVisible(true);
     
-    // 2. تحديث جدول العملاء
     loadCustomerData();
     }//GEN-LAST:event_btnAddCustActionPerformed
 
@@ -381,8 +373,7 @@ addCustDlg.setLocationRelativeTo(this);
     try (java.io.PrintWriter writer = new java.io.PrintWriter(new java.io.File(fileName))) {
         StringBuilder sb = new StringBuilder();
         
-        // 1. تصدير الوجبات
-        sb.append("Type,ID,Name,Price/Info\n"); // Header
+        sb.append("Type,ID,Name,Price/Info\n");
         for (int i = 0; i < tblMeals.getRowCount(); i++) {
             sb.append("Meal,")
               .append(tblMeals.getValueAt(i, 0)).append(",")
@@ -390,7 +381,6 @@ addCustDlg.setLocationRelativeTo(this);
               .append(tblMeals.getValueAt(i, 2)).append("\n");
         }
 
-        // 2. تصدير الموظفين
         for (int i = 0; i < tblEmployees.getRowCount(); i++) {
             sb.append("Employee,")
               .append(tblEmployees.getValueAt(i, 0)).append(",")
@@ -439,14 +429,12 @@ addCustDlg.setLocationRelativeTo(this);
     String mostExpensiveMeal = "N/A";
     double maxPrice = 0;
 
-    // 1. حساب إجمالي الرواتب من جدول الموظفين
     for (int i = 0; i < tblEmployees.getRowCount(); i++) {
         try {
             totalSalaries += Double.parseDouble(tblEmployees.getValueAt(i, 3).toString());
         } catch (Exception e) {}
     }
 
-    // 2. إيجاد أغلى وجبة من جدول الوجبات
     for (int i = 0; i < tblMeals.getRowCount(); i++) {
         try {
             double price = Double.parseDouble(tblMeals.getValueAt(i, 2).toString());
@@ -457,7 +445,6 @@ addCustDlg.setLocationRelativeTo(this);
         } catch (Exception e) {}
     }
 
-    // 3. تحديث الـ Labels
     lblTotalSalaries.setText("Total Salaries: " + totalSalaries + " EGP");
     lblStats.setText("Most Expensive: " + mostExpensiveMeal + " (" + maxPrice + " EGP)");
 }
@@ -470,7 +457,6 @@ private void exportDataToPDF() {
         writer.println("==================================================");
         writer.println("Date: " + new java.util.Date());
         
-        // الجزء الجديد: Summary Analytics
         writer.println("\n--- FINANCIAL SUMMARY ---");
         writer.println(lblTotalSalaries.getText());
         writer.println(lblStats.getText());

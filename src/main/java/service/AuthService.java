@@ -5,7 +5,7 @@ import repository.UserRepository;
 
 public class AuthService {
     private final UserRepository userRepository;
-    private static User currentUser; // To keep track of the logged-in user
+    private static User currentUser;
 
     public AuthService() {
         this.userRepository = new UserRepository();
@@ -31,10 +31,8 @@ public class AuthService {
     public static boolean isAdmin() {
         return currentUser != null && "ADMIN".equalsIgnoreCase(currentUser.getUserRole());
     }
-    // أضف هذه الميثود داخل كلاس AuthService
 public boolean register(User user) {
     try {
-        // ندهنا ميثود save اللي موجودة فعلاً في الـ UserRepository بتاعك
         userRepository.save(user); 
         return true;
     } catch (Exception e) {

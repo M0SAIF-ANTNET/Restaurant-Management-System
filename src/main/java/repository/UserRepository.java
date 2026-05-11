@@ -32,7 +32,6 @@ public class UserRepository {
         } catch (SQLException e) { e.printStackTrace(); }
     }
 
-    // الميثود دي هي اللي هتحل مشكلة عرض البيانات في الجداول
     public List<User> getAllUsers() {
         List<User> users = new ArrayList<>();
         String sql = "SELECT * FROM users";
@@ -42,11 +41,9 @@ public class UserRepository {
             while (rs.next()) {
                 String role = rs.getString("role");
                 if ("CUSTOMER".equalsIgnoreCase(role)) {
-                    // سحب العميل مع رقم تليفونه
                     users.add(new User(rs.getInt("id"), rs.getString("name"), rs.getString("phone"), 
                                      rs.getString("email"), rs.getString("username"), rs.getString("password"), role));
                 } else {
-                    // سحب الموظف مع مرتبه ورقم تليفونه
                     users.add(new Employee(rs.getInt("id"), rs.getString("name"), rs.getString("phone"), 
                                          rs.getString("email"), rs.getString("username"), rs.getString("password"), 
                                          role, rs.getDouble("salary")));

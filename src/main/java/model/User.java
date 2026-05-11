@@ -4,7 +4,7 @@ import enums.UserRole;
 public class User extends Person {
     private String username;
     private String password;
-    private String userRole; // ADMIN, WAITER, CHEF, etc.
+    private String userRole;
 
     public User(int id, String name, String phone, String email, String username, String password, String userRole) {
         super(id, name, phone, email);

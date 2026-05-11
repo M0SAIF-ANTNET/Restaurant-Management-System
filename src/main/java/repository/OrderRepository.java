@@ -38,7 +38,6 @@ public class OrderRepository {
         }
     }
 
-    // تأكدنا إن اسم الميثود save عشان يطابق استدعاء السيرفيس عندك
     public void saveOrder(Order order) { 
         String query = "INSERT INTO orders (customer_name, total_price, status) VALUES (?, ?, ?)";
         try (Connection conn = DatabaseConnection.getConnection();
@@ -96,7 +95,7 @@ public class OrderRepository {
                 Order order = new Order(
                     rs.getInt("id"),
                     rs.getString("customer_name"),
-                    new ArrayList<>(), // هنا ممكن نطورها لاحقاً عشان نسحب الوجبات فعلياً
+                    new ArrayList<>(),
                     rs.getDouble("total_price"),
                     OrderStatus.valueOf(rs.getString("status"))
                 );
