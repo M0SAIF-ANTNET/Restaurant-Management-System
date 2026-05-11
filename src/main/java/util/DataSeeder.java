@@ -8,12 +8,17 @@ public class DataSeeder {
         try (Connection conn = DatabaseConnection.getConnection();
              Statement stmt = conn.createStatement()) {
             
+            // تحديث جدول المستخدمين ليشمل كل الحقول المطلوبة
             stmt.execute("CREATE TABLE IF NOT EXISTS users (" +
                          "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                          "username TEXT UNIQUE, " +
                          "password TEXT, " +
                          "name TEXT, " +
-                         "role TEXT)");
+                         "phone TEXT, " +
+                         "email TEXT, " +
+                         "address TEXT, " +
+                         "role TEXT, " +
+                         "salary REAL DEFAULT 0.0)");
 
             stmt.execute("CREATE TABLE IF NOT EXISTS meals (" +
                          "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -23,17 +28,21 @@ public class DataSeeder {
                          "category TEXT, " +
                          "available INTEGER)");
 
-            stmt.execute("INSERT OR IGNORE INTO users (username, password, name, role) " +
-                         "VALUES ('admin', 'admin123', 'Mohamed Abdelsamea', 'ADMIN')");
-            stmt.execute("INSERT OR IGNORE INTO users (username, password, name, role) " +
-             "VALUES ('chef1', '123', 'Ahmed the Chef', 'CHEF')");
+            // إدخال بيانات الأدمن والشيف الافتراضية
+            stmt.execute("INSERT OR IGNORE INTO users (username, password, name, role, salary) " +
+                         "VALUES ('admin', 'admin123', 'Mohamed Abdelsamea', 'ADMIN', 0.0)");
+            stmt.execute("INSERT OR IGNORE INTO users (username, password, name, role, salary) " +
+                         "VALUES ('chef1', '123', 'Ahmed the Chef', 'CHEF', 12000.0)");
+            stmt.execute("INSERT OR IGNORE INTO users (username, password, name, role, salary) " +
+                         "VALUES ('cust1', '123', 'hesham', 'CUSTOMER', 0.0)");
             
+            // الوجبات الافتراضية
             stmt.execute("INSERT OR IGNORE INTO meals (id, name, description, price, category, available) " +
                          "VALUES (1, 'Margherita Pizza', 'Tomato & Mozzarella', 120.0, 'PIZZA', 1)");
-            stmt.execute("INSERT OR IGNORE INTO meals (id, name, description, price, category, available) VALUES (2, 'Beef Burger', 'Double patty with cheese', 150.0, 'BURGER', 1)");
-            stmt.execute("INSERT OR IGNORE INTO meals (id, name, description, price, category, available) VALUES (3, 'Caesar Salad', 'Fresh lettuce with parmesan', 80.0, 'APPETIZER', 1)");
-            stmt.execute("INSERT OR IGNORE INTO meals (id, name, description, price, category, available) VALUES (4, 'Molten Cake', 'Chocolate lava cake', 90.0, 'DESSERT', 1)");
-            System.out.println("✅ Database tables checked/created successfully.");
+            stmt.execute("INSERT OR IGNORE INTO meals (id, name, description, price, category, available) " +
+                         "VALUES (2, 'Beef Burger', 'Double patty with cheese', 150.0, 'BURGER', 1)");
+            
+            System.out.println("✅ Database updated with all attributes.");
 
         } catch (Exception e) {
             System.err.println("Seeding Error: " + e.getMessage());

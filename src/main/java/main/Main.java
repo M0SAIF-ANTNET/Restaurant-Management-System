@@ -1,34 +1,14 @@
-package main;
+package main; // أو اسم الباكيدج اللي فيها ملف التشغيل عندك
 
-import util.DataSeeder;
-import ui.LoginForm;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-
-public class Main {
+public class Main{ // اسم الكلاس بتاعك
     public static void main(String[] args) {
-        initializeSystem();
-
-        try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (Exception e) {
-            System.err.println("Theme Error: " + e.getMessage());
-        }
-
-        SwingUtilities.invokeLater(() -> {
-            LoginForm loginForm = new LoginForm();
-            loginForm.setVisible(true);
-            loginForm.setLocationRelativeTo(null);
+        
+        // دي أهم خطوة: بتعمل ملف الداتا بيز لو مش موجود وتكريت الجداول
+        util.DataSeeder.seed();
+        
+        // دي بتفتح أول شاشة هيشوفها المستخدم (اللوجن)
+        java.awt.EventQueue.invokeLater(() -> {
+            new ui.LoginForm().setVisible(true);
         });
-    }
-
-    private static void initializeSystem() {
-        System.out.println("Initializing Chef Shaker System...");
-        try {
-            // DataSeeder.seed();
-            System.out.println("Database sync complete.");
-        } catch (Exception e) {
-            System.err.println("Critical Error during initialization: " + e.getMessage());
-        }
     }
 }

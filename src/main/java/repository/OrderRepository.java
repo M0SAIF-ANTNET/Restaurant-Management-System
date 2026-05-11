@@ -5,8 +5,40 @@ import model.Meal;
 import enums.OrderStatus;
 import util.DatabaseConnection;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class OrderRepository {
+
+    // Constructor عشان أول ما نستخدم الريبوزتري يتأكد إن الجداول موجودة
+    public OrderRepository() {
+        createTablesIfNotExist();
+    }
+
+    private void createTablesIfNotExist() {
+        String sqlOrders = "CREATE TABLE IF NOT EXISTS orders (" +
+                           "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                           "customer_name TEXT, " +
+                           "total_price REAL, " +
+                           "status TEXT);";
+        
+        String sqlOrderItems = "CREATE TABLE IF NOT EXISTS order_items (" +
+                               "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                               "order_id INTEGER, " +
+                               "meal_id INTEGER, " +
+                               "quantity INTEGER, " +
+                               "FOREIGN KEY (order_id) REFERENCES orders(id));";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             Statement stmt = conn.createStatement()) {
+            stmt.execute(sqlOrders);
+            stmt.execute(sqlOrderItems);
+        } catch (SQLException e) {
+            System.err.println("Error initializing tables: " + e.getMessage());
+        }
+    }
+
+    // تأكدنا إن اسم الميثود save عشان يطابق استدعاء السيرفيس عندك
     public void saveOrder(Order order) { 
         String query = "INSERT INTO orders (customer_name, total_price, status) VALUES (?, ?, ?)";
         try (Connection conn = DatabaseConnection.getConnection();
@@ -52,5 +84,27 @@ public class OrderRepository {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public List<Order> findAll() {
+        List<Order> orders = new ArrayList<>();
+        String query = "SELECT * FROM orders";
+        try (Connection conn = DatabaseConnection.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+            while (rs.next()) {
+                Order order = new Order(
+                    rs.getInt("id"),
+                    rs.getString("customer_name"),
+                    new ArrayList<>(), // هنا ممكن نطورها لاحقاً عشان نسحب الوجبات فعلياً
+                    rs.getDouble("total_price"),
+                    OrderStatus.valueOf(rs.getString("status"))
+                );
+                orders.add(order);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return orders;
     }
 }

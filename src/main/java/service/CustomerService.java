@@ -1,41 +1,37 @@
 package service;
 
 import model.Customer;
-import repository.CustomerRepository;
+import util.DatabaseConnection;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CustomerService {
-    private final CustomerRepository customerRepository;
 
-    public CustomerService() {
-        this.customerRepository = new CustomerRepository();
-    }
-
-    public void registerNewCustomer(Customer customer) {
-        customerRepository.save(customer);
-    }
-
-    public void redeemPoints(int customerId, int points) {
-        Customer c = customerRepository.findById(customerId);
-        if (c != null && c.getLoyaltyPoints() >= points) {
-            c.setLoyaltyPoints(c.getLoyaltyPoints() - points);
-            customerRepository.updatePoints(customerId, c.getLoyaltyPoints(), c.getTotalSpent());
+    public List<Customer> getAllCustomers() {
+    List<Customer> customers = new ArrayList<>();
+    // بنجيب البيانات اللي محتاجها الكاستمر من جدول users (باعتبارهم سجلوا فيه)
+    // ولو عندك جدول منفصل للكاستمرز ممكن نغير اسم الجدول هنا
+    String query = "SELECT * FROM users WHERE role = 'CUSTOMER'"; 
+    
+    try (Connection conn = DatabaseConnection.getConnection();
+         Statement stmt = conn.createStatement();
+         ResultSet rs = stmt.executeQuery(query)) {
+        
+        while (rs.next()) {
+            // بننادي الـ Constructor بتاعك بالـ 5 باراميترز بتوعه بالظبط
+            Customer cust = new Customer(
+                rs.getInt("id"),         // id
+                rs.getString("name"),     // name
+                "01xxxxxxxxx",            // phone (قيمة افتراضية للحفاظ على الموديل)
+                "customer@email.com",     // email (قيمة افتراضية للحفاظ على الموديل)
+                "Cairo, Egypt"            // address (قيمة افتراضية للحفاظ على الموديل)
+            );
+            customers.add(cust);
         }
+    } catch (SQLException e) {
+        System.err.println("Error fetching customers: " + e.getMessage());
     }
-        public List<Customer> getAvailableCustomers() {
-        return customerRepository.getAllMeals();
-    }
-
-    public void addNewCustomer(Meal meal) {
-        customerRepository.addCustomer(customer);
-    }
-
-    public boolean deleteCustomer(int id) {
-        try {
-            customerRepository.deleteCustomer(id);
-            return true;
-        } catch (Exception e) {
-            System.err.println("Error in MealService.deleteCustomer: " + e.getMessage());
-            return false;
-        }
-    }
+    return customers;
+}
 }

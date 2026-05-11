@@ -9,6 +9,9 @@ import model.Meal;
 import java.util.List;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.JOptionPane;
+import ui.addEmployeeDialog;
+import ui.AddCustomerDialog;
+import ui.AddMealDialog;
 
 public class AdminDashboard extends javax.swing.JFrame {
     
@@ -24,13 +27,14 @@ public class AdminDashboard extends javax.swing.JFrame {
         loadCustomerData();  // وزود دي
     }
 
-    private void loadMealData() {
+private void loadMealData() {
     try {
         service.MealService mealService = new service.MealService();
         java.util.List<model.Meal> meals = mealService.getAvailableMenu();
         
-        javax.swing.table.DefaultTableModel model = (javax.swing.table.DefaultTableModel) tblMeals.getModel();
-        model.setRowCount(0);
+        // تعريف أسماء الأعمدة طبقاً للموديل اللي معاك
+        String[] columnNames = {"ID", "Name", "Price", "Category", "Available"};
+        DefaultTableModel model = new DefaultTableModel(columnNames, 0);
         
         for (model.Meal meal : meals) {
             Object[] row = {
@@ -42,48 +46,56 @@ public class AdminDashboard extends javax.swing.JFrame {
             };
             model.addRow(row);
         }
+        tblMeals.setModel(model); // نربط الموديل الجديد بالجدول
     } catch (Exception e) {
-        javax.swing.JOptionPane.showMessageDialog(this, "Error loading data: " + e.getMessage());
+        JOptionPane.showMessageDialog(this, "Error loading meals: " + e.getMessage());
     }
 }
     
     private void loadEmployeeData() {
-    try {
-        service.EmployeeService empService = new service.EmployeeService();
-        java.util.List<model.Employee> employees = empService.getAllEmployees();
-        
+       try {
+        repository.UserRepository userRepo = new repository.UserRepository();
+        java.util.List<model.User> allUsers = userRepo.getAllUsers();
+
         DefaultTableModel model = (DefaultTableModel) tblEmployees.getModel();
         model.setRowCount(0);
-        
-        for (model.Employee emp : employees) {
-            Object[] row = {
-                emp.getId(),
-                emp.getName(),
-                emp.getRole(),
-                emp.getSalary()
-            };
-            model.addRow(row);
+
+        for (model.User u : allUsers) {
+            // بنفلتر عشان نعرض الموظفين بس (أي حد مش CUSTOMER)
+            if (u instanceof model.Employee) {
+                model.Employee emp = (model.Employee) u;
+                Object[] row = {
+                    emp.getId(),
+                    emp.getName(),
+                    emp.getUserRole(),
+                    emp.getSalary() // هيعرض السالري الحقيقي من الداتا بيز
+                };
+                model.addRow(row);
+            }
         }
     } catch (Exception e) {
         JOptionPane.showMessageDialog(this, "Error loading employees: " + e.getMessage());
     }
-}
+    }
+   
     private void loadCustomerData() {
-    try {
-        service.CustomerService custService = new service.CustomerService();
-        java.util.List<model.Customer> customers = custService.getAllCustomers();
+     try {
+        repository.UserRepository userRepo = new repository.UserRepository();
+        java.util.List<model.User> allUsers = userRepo.getAllUsers();
         
         DefaultTableModel model = (DefaultTableModel) tblCustomers.getModel();
         model.setRowCount(0);
         
-        for (model.Customer cust : customers) {
-            Object[] row = {
-                cust.getId(),
-                cust.getName(),
-                cust.getPhone(),
-                cust.getLoyaltyPoints()
-            };
-            model.addRow(row);
+        for (model.User u : allUsers) {
+            if ("CUSTOMER".equalsIgnoreCase(u.getUserRole())) {
+                Object[] row = {
+                    u.getId(),
+                    u.getName(),
+                    u.getPhone(), // هيعرض الموبايل الحقيقي اللي دخلته
+                    0 // نقاط الولاء (ممكن تخليها 0 حالياً)
+                };
+                model.addRow(row);
+            }
         }
     } catch (Exception e) {
         JOptionPane.showMessageDialog(this, "Error loading customers: " + e.getMessage());
@@ -98,6 +110,7 @@ public class AdminDashboard extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jButton1 = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         tblMeals = new javax.swing.JTable();
         btnAddMeal = new javax.swing.JButton();
@@ -111,6 +124,12 @@ public class AdminDashboard extends javax.swing.JFrame {
         jScrollPane3 = new javax.swing.JScrollPane();
         tblCustomers = new javax.swing.JTable();
         btnAddCust = new javax.swing.JButton();
+        lblStats = new javax.swing.JLabel();
+        lblTotalSalaries = new javax.swing.JLabel();
+        jButton2 = new javax.swing.JButton();
+        logAction = new javax.swing.JButton();
+
+        jButton1.setText("jButton1");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -174,6 +193,16 @@ public class AdminDashboard extends javax.swing.JFrame {
         btnAddCust.setText("add cust");
         btnAddCust.addActionListener(this::btnAddCustActionPerformed);
 
+        lblStats.setText("lblStats");
+
+        lblTotalSalaries.setText("lblTotalSalaries");
+
+        jButton2.setText("export csv");
+        jButton2.addActionListener(this::jButton2ActionPerformed);
+
+        logAction.setText("log action");
+        logAction.addActionListener(this::logActionActionPerformed);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -198,18 +227,24 @@ public class AdminDashboard extends javax.swing.JFrame {
                                 .addGap(18, 18, 18)
                                 .addComponent(btnDeleteEmp))))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(220, 220, 220)
+                        .addGap(15, 15, 15)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 419, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(157, 157, 157)
-                                .addComponent(btnAddCust)))))
+                            .addComponent(lblStats)
+                            .addComponent(lblTotalSalaries))
+                        .addGap(159, 159, 159)
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 419, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(0, 24, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btnAddCust)
+                .addGap(409, 409, 409))
             .addGroup(layout.createSequentialGroup()
                 .addGap(30, 30, 30)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(btnPDF, javax.swing.GroupLayout.DEFAULT_SIZE, 834, Short.MAX_VALUE)
-                    .addComponent(btnRefresh, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(btnRefresh, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(logAction, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -225,14 +260,27 @@ public class AdminDashboard extends javax.swing.JFrame {
                     .addComponent(deleteMeal)
                     .addComponent(btnAddEmp)
                     .addComponent(btnDeleteEmp))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 34, Short.MAX_VALUE)
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 269, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(30, 30, 30)
-                .addComponent(btnAddCust)
-                .addGap(29, 29, 29)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 18, Short.MAX_VALUE)
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 217, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnAddCust)
+                        .addGap(40, 40, 40))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(116, 116, 116)
+                        .addComponent(lblStats)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lblTotalSalaries)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addComponent(logAction)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnPDF)
-                .addGap(5, 5, 5)
-                .addComponent(btnRefresh))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnRefresh)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton2)
+                .addContainerGap())
         );
 
         pack();
@@ -255,7 +303,7 @@ public class AdminDashboard extends javax.swing.JFrame {
             return;
         }
 
-        int id = (int) tblMeals.getValueAt(selectedRow, 0);
+        int id = Integer.parseInt(tblMeals.getValueAt(selectedRow, 0).toString());
         int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete this meal?");
 
         if (confirm == JOptionPane.YES_OPTION) {
@@ -272,37 +320,94 @@ public class AdminDashboard extends javax.swing.JFrame {
 
     private void btnRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRefreshActionPerformed
         loadMealData();
+        loadEmployeeData();
+        loadCustomerData();
     }//GEN-LAST:event_btnRefreshActionPerformed
 
     private void btnAddEmpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddEmpActionPerformed
-        String name = JOptionPane.showInputDialog(this, "Enter Employee Name:");
-        if (name != null && !name.isEmpty()) {
-            loadEmployeeData();
-        }
+addEmployeeDialog addEmpDlg = new addEmployeeDialog(); 
+addEmpDlg.setVisible(true);    addEmpDlg.setLocationRelativeTo(this); // عشان يظهر في نص الشاشة
+    addEmpDlg.setVisible(true); 
+    
+    // 2. بعد ما الديالوج يتقفل، بنعمل ريفرش للجدول عشان نشوف الموظف الجديد
+    loadEmployeeData();
     }//GEN-LAST:event_btnAddEmpActionPerformed
 
     private void btnDeleteEmpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteEmpActionPerformed
-    int selectedRow = tblEmployees.getSelectedRow();
+int selectedRow = tblEmployees.getSelectedRow();
+    
+    // 1. التأكد إن اليوزر اختار صف فعلاً
     if (selectedRow == -1) {
-        JOptionPane.showMessageDialog(this, "Select an employee to delete.");
+        JOptionPane.showMessageDialog(this, "Please select an employee from the table first!");
         return;
     }
 
-    int id = (int) tblEmployees.getValueAt(selectedRow, 0);
-    if (JOptionPane.showConfirmDialog(this, "Delete this employee?") == JOptionPane.YES_OPTION) {
-        if (new service.EmployeeService().deleteEmployee(id)) {
-            loadEmployeeData(); // ريفرش للجدول
+    try {
+        // 2. سحب الـ ID من العمود الأول (لازم نتأكد إنه Integer)
+        Object idObj = tblEmployees.getValueAt(selectedRow, 0);
+        int id = Integer.parseInt(idObj.toString());
+
+        // 3. تأكيد الحذف
+        int confirm = JOptionPane.showConfirmDialog(this, 
+            "Are you sure you want to delete employee ID: " + id + "?", 
+            "Confirm Deletion", JOptionPane.YES_NO_OPTION);
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            service.EmployeeService empService = new service.EmployeeService();
+            if (empService.deleteEmployee(id)) {
+                JOptionPane.showMessageDialog(this, "Employee deleted successfully!");
+                loadEmployeeData(); // تحديث الجدول فوراً
+            } else {
+                JOptionPane.showMessageDialog(this, "Failed to delete. Employee might not exist.");
+            }
         }
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this, "Error during deletion: " + e.getMessage());
+    
     }    }//GEN-LAST:event_btnDeleteEmpActionPerformed
 
     private void btnAddCustActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddCustActionPerformed
-        String name = JOptionPane.showInputDialog(this, "Enter Customer Name:");
-        String phone = JOptionPane.showInputDialog(this, "Enter Customer Phone:");
-        if (name != null && phone != null) {
-            // كود الحفظ من خلال السيرفيس
-            loadCustomerData(); // ريفرش
-        }
+AddCustomerDialog addCustDlg = new AddCustomerDialog();
+addCustDlg.setVisible(true);
+addCustDlg.setLocationRelativeTo(this);
+    addCustDlg.setVisible(true);
+    
+    // 2. تحديث جدول العملاء
+    loadCustomerData();
     }//GEN-LAST:event_btnAddCustActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        String fileName = "Restaurant_Data.csv";
+    try (java.io.PrintWriter writer = new java.io.PrintWriter(new java.io.File(fileName))) {
+        StringBuilder sb = new StringBuilder();
+        
+        // 1. تصدير الوجبات
+        sb.append("Type,ID,Name,Price/Info\n"); // Header
+        for (int i = 0; i < tblMeals.getRowCount(); i++) {
+            sb.append("Meal,")
+              .append(tblMeals.getValueAt(i, 0)).append(",")
+              .append(tblMeals.getValueAt(i, 1)).append(",")
+              .append(tblMeals.getValueAt(i, 2)).append("\n");
+        }
+
+        // 2. تصدير الموظفين
+        for (int i = 0; i < tblEmployees.getRowCount(); i++) {
+            sb.append("Employee,")
+              .append(tblEmployees.getValueAt(i, 0)).append(",")
+              .append(tblEmployees.getValueAt(i, 1)).append(",")
+              .append(tblEmployees.getValueAt(i, 3)).append("\n");
+        }
+
+        writer.write(sb.toString());
+        JOptionPane.showMessageDialog(this, "Data exported to CSV successfully!");
+    } catch (java.io.FileNotFoundException e) {
+        JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
+    }
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void logActionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logActionActionPerformed
+
+    }//GEN-LAST:event_logActionActionPerformed
 
     /**
      * @param args the command line arguments
@@ -328,9 +433,74 @@ public class AdminDashboard extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> new AdminDashboard().setVisible(true));
     }
-    private void exportDataToPDF() {
- 
-    System.out.println("Generating PDF Report for Meals, Employees, and Customers...");
+    
+    private void updateAnalytics() {
+    double totalSalaries = 0;
+    String mostExpensiveMeal = "N/A";
+    double maxPrice = 0;
+
+    // 1. حساب إجمالي الرواتب من جدول الموظفين
+    for (int i = 0; i < tblEmployees.getRowCount(); i++) {
+        try {
+            totalSalaries += Double.parseDouble(tblEmployees.getValueAt(i, 3).toString());
+        } catch (Exception e) {}
+    }
+
+    // 2. إيجاد أغلى وجبة من جدول الوجبات
+    for (int i = 0; i < tblMeals.getRowCount(); i++) {
+        try {
+            double price = Double.parseDouble(tblMeals.getValueAt(i, 2).toString());
+            if (price > maxPrice) {
+                maxPrice = price;
+                mostExpensiveMeal = tblMeals.getValueAt(i, 1).toString();
+            }
+        } catch (Exception e) {}
+    }
+
+    // 3. تحديث الـ Labels
+    lblTotalSalaries.setText("Total Salaries: " + totalSalaries + " EGP");
+    lblStats.setText("Most Expensive: " + mostExpensiveMeal + " (" + maxPrice + " EGP)");
+}
+    
+private void exportDataToPDF() {
+    String fileName = "Restaurant_Report.txt";
+    try (java.io.PrintWriter writer = new java.io.PrintWriter(new java.io.FileWriter(fileName))) {
+        writer.println("==================================================");
+        writer.println("            RESTAURANT SUMMARY REPORT             ");
+        writer.println("==================================================");
+        writer.println("Date: " + new java.util.Date());
+        
+        // الجزء الجديد: Summary Analytics
+        writer.println("\n--- FINANCIAL SUMMARY ---");
+        writer.println(lblTotalSalaries.getText());
+        writer.println(lblStats.getText());
+        writer.println("Total Employees: " + tblEmployees.getRowCount());
+        writer.println("Total Customers: " + tblCustomers.getRowCount());
+        writer.println("--------------------------------------------------");
+
+        writer.println("\n--- MEALS LIST ---");
+        for (int i = 0; i < tblMeals.getRowCount(); i++) {
+            writer.println("- " + tblMeals.getValueAt(i, 1) + " | Price: " + tblMeals.getValueAt(i, 2) + " EGP");
+        }
+
+        writer.println("\n--- EMPLOYEES LIST ---");
+        for (int i = 0; i < tblEmployees.getRowCount(); i++) {
+            writer.println("- " + tblEmployees.getValueAt(i, 1) + " | Role: " + tblEmployees.getValueAt(i, 2) + " | Salary: " + tblEmployees.getValueAt(i, 3));
+        }
+
+        writer.println("\n--- CUSTOMERS LIST ---");
+        for (int i = 0; i < tblCustomers.getRowCount(); i++) {
+            writer.println("- " + tblCustomers.getValueAt(i, 1) + " | Phone: " + tblCustomers.getValueAt(i, 2));
+        }
+        
+        writer.println("\n==================================================");
+        writer.println("         Generated by: " + (service.AuthService.getCurrentUser() != null ? service.AuthService.getCurrentUser().getName() : "Admin"));
+        writer.println("==================================================");
+        
+        JOptionPane.showMessageDialog(this, "Report saved successfully to: " + fileName);
+    } catch (java.io.IOException e) {
+        JOptionPane.showMessageDialog(this, "Export Error: " + e.getMessage());
+    }
 }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -341,9 +511,14 @@ public class AdminDashboard extends javax.swing.JFrame {
     private javax.swing.JButton btnPDF;
     private javax.swing.JButton btnRefresh;
     private javax.swing.JButton deleteMeal;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JLabel lblStats;
+    private javax.swing.JLabel lblTotalSalaries;
+    private javax.swing.JButton logAction;
     private javax.swing.JTable tblCustomers;
     private javax.swing.JTable tblEmployees;
     private javax.swing.JTable tblMeals;

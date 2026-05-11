@@ -31,4 +31,15 @@ public class AuthService {
     public static boolean isAdmin() {
         return currentUser != null && "ADMIN".equalsIgnoreCase(currentUser.getUserRole());
     }
+    // أضف هذه الميثود داخل كلاس AuthService
+public boolean register(User user) {
+    try {
+        // ندهنا ميثود save اللي موجودة فعلاً في الـ UserRepository بتاعك
+        userRepository.save(user); 
+        return true;
+    } catch (Exception e) {
+        System.err.println("Registration Error: " + e.getMessage());
+        return false;
+    }
+}
 }

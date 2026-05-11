@@ -113,8 +113,12 @@ System.out.println("Opening Admin View...");
         this.dispose();
     } else if (roleStr.equals("CHEF")) {
         System.out.println("Opening Chef View...");
-    } else if (roleStr.equals("WAITER")) {
-        System.out.println("Opening Waiter View...");
+        new ChefDashboard().setVisible(true);
+        this.dispose();
+    } else if (roleStr.equals("CUSTOMER")) {
+        System.out.println("Opening customer View...");
+        new customerDashboard().setVisible(true);
+        this.dispose();
     } else {
         System.out.println("Role not recognized: " + roleStr);
     }

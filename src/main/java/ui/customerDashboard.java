@@ -15,8 +15,36 @@ public class customerDashboard extends javax.swing.JFrame {
     /**
      * Creates new form customerDashboard
      */
-    public customerDashboard() {
-        initComponents();
+public customerDashboard() {
+    initComponents();
+
+    loadMealData();
+
+    tblMeals.setSelectionMode(
+        javax.swing.ListSelectionModel.MULTIPLE_INTERVAL_SELECTION
+    );
+}
+    private void loadMealData() {
+        try {
+            service.MealService mealService = new service.MealService();
+            java.util.List<model.Meal> meals = mealService.getAvailableMenu();
+        
+            javax.swing.table.DefaultTableModel model = (javax.swing.table.DefaultTableModel) tblMeals.getModel();
+            model.setRowCount(0);
+        
+            for (model.Meal meal : meals) {
+                Object[] row = {
+                    meal.getMealId(),
+                    meal.getName(),
+                    meal.getPrice(),
+                    meal.getCategory(),
+                    meal.isAvailable() ? "Yes" : "No"
+                };
+                model.addRow(row);
+            }
+        } catch (Exception e) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Error loading data: " + e.getMessage());
+        }   
     }
 
     /**
@@ -28,21 +56,116 @@ public class customerDashboard extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jPanel1 = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tblMeals = new javax.swing.JTable();
+        tblConfirmMeal = new javax.swing.JButton();
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 100, Short.MAX_VALUE)
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 100, Short.MAX_VALUE)
+        );
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        tblMeals.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane1.setViewportView(tblMeals);
+
+        tblConfirmMeal.setText("Confirm Order");
+        tblConfirmMeal.addActionListener(this::tblConfirmMealActionPerformed);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 281, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(tblConfirmMeal))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(tblConfirmMeal)
+                .addContainerGap())
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void tblConfirmMealActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tblConfirmMealActionPerformed
+        int[] selectedRows = tblMeals.getSelectedRows();
+    if (selectedRows.length == 0) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Please select at least one meal");
+        return;
+    }
+
+    java.util.List<model.Meal> selectedMeals = new java.util.ArrayList<>();
+    double totalOrderPrice = 0;
+
+    for (int row : selectedRows) {
+        try {
+            // سحب البيانات من الجدول
+            int mealId = Integer.parseInt(tblMeals.getValueAt(row, 0).toString());
+            String name = tblMeals.getValueAt(row, 1).toString();
+            double price = Double.parseDouble(tblMeals.getValueAt(row, 2).toString());
+            String categoryStr = tblMeals.getValueAt(row, 3).toString();
+
+            // تحويل الـ String لـ Enum (MealCategory)
+            enums.MealCategory cat = enums.MealCategory.valueOf(categoryStr.toUpperCase());
+
+            // إنشاء كائن الوجبة باستخدام الـ Constructor المتاح عندك
+            model.Meal m = new model.Meal(mealId, name, "", price, cat, true);
+            
+            selectedMeals.add(m);
+            totalOrderPrice += price;
+        } catch (Exception e) {
+            System.out.println("Row processing error: " + e.getMessage());
+        }
+    }
+
+    try {
+        // إنشاء الأوردر باستخدام الـ Constructor المتاح في كلاس Order
+        model.Order newOrder = new model.Order(
+            0, // الـ ID بيتم إنشاؤه تلقائي في الداتا بيز
+            "Guest Customer", 
+            selectedMeals, 
+            totalOrderPrice, 
+            enums.OrderStatus.PENDING
+        );
+
+        // تنفيذ الطلب من خلال الـ OrderService زي ما هو متعرف عندك
+        service.OrderService orderService = new service.OrderService();
+        orderService.placeOrder(newOrder);
+
+        // تسجيل العملية في ملف الـ Log
+        util.LoggerUtil.log("Order Placed - Total: " + totalOrderPrice + " EGP");
+
+        javax.swing.JOptionPane.showMessageDialog(this, "Order sent to Chef successfully!");
+        
+    } catch (Exception e) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Error placing order: " + e.getMessage());
+    }
+    }//GEN-LAST:event_tblConfirmMealActionPerformed
 
     /**
      * @param args the command line arguments
@@ -64,11 +187,15 @@ public class customerDashboard extends javax.swing.JFrame {
             logger.log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
-
+        
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> new customerDashboard().setVisible(true));
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JButton tblConfirmMeal;
+    private javax.swing.JTable tblMeals;
     // End of variables declaration//GEN-END:variables
 }
