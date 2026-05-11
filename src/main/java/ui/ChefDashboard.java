@@ -7,6 +7,7 @@ package ui;
 import repository.OrderRepository;
 import model.Order;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.JOptionPane;
 
@@ -35,9 +36,14 @@ public class ChefDashboard extends javax.swing.JFrame {
             tableModel.setRowCount(0);
 
             for (Order order : orders) {
+                String mealNames = order.getMeals().stream()
+                        .map(m -> m.getName())
+                        .collect(Collectors.joining(", "));
+
                 Object[] row = {
                     order.getOrderId(),
                     order.getCustomerName(),
+                    mealNames,
                     order.getTotalPrice(),
                     order.getStatus()
                 };
@@ -47,7 +53,6 @@ public class ChefDashboard extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Error loading orders: " + e.getMessage());
         }
     }
-
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -68,7 +73,7 @@ public class ChefDashboard extends javax.swing.JFrame {
 
             },
             new String [] {
-                "Order ID", "Customer", "Total Price", "Status"
+                "Order ID", "Customer", "Meal", "Price", "status"
             }
         ));
         jScrollPane2.setViewportView(tblOrders);

@@ -85,25 +85,45 @@ public class OrderRepository {
         }
     }
 
-    public List<Order> findAll() {
-        List<Order> orders = new ArrayList<>();
-        String query = "SELECT * FROM orders";
-        try (Connection conn = DatabaseConnection.getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(query)) {
-            while (rs.next()) {
-                Order order = new Order(
-                    rs.getInt("id"),
-                    rs.getString("customer_name"),
-                    new ArrayList<>(),
-                    rs.getDouble("total_price"),
-                    OrderStatus.valueOf(rs.getString("status"))
-                );
-                orders.add(order);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+    private List<Meal> getMealsByOrderId(int orderId) {
+    List<Meal> meals = new ArrayList<>();
+    String query = "SELECT m.name FROM meals m " +
+                   "JOIN order_items oi ON m.id = oi.meal_id " +
+                   "WHERE oi.order_id = ?";
+    try (Connection conn = DatabaseConnection.getConnection();
+         PreparedStatement pstmt = conn.prepareStatement(query)) {
+        pstmt.setInt(1, orderId);
+        ResultSet rs = pstmt.executeQuery();
+        while (rs.next()) {
+            meals.add(new Meal(0, rs.getString("name"), "", 0, null, true));
         }
-        return orders;
+    } catch (SQLException e) {
+        e.printStackTrace();
     }
+    return meals;
+}
+    
+public List<Order> findAll() {
+    List<Order> orders = new ArrayList<>();
+    String query = "SELECT * FROM orders";
+    try (Connection conn = DatabaseConnection.getConnection();
+         Statement stmt = conn.createStatement();
+         ResultSet rs = stmt.executeQuery(query)) {
+        while (rs.next()) {
+    int orderId = rs.getInt("id");
+    List<Meal> meals = getMealsByOrderId(orderId); 
+    Order order = new Order(
+        orderId,
+        rs.getString("customer_name"),
+        meals,
+        rs.getDouble("total_price"),
+        OrderStatus.valueOf(rs.getString("status"))
+    );
+    orders.add(order);
+}
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return orders;
+}
 }
